@@ -12,11 +12,11 @@ Bitboard::Bitboard(const U64 init_bitboard) : bitboard(init_bitboard) {}
 Bitboard::Bitboard(const Bitboard& rhs) : bitboard(rhs.bitboard) {}
 
 // user-definded conversion functions
+// see: https://en.cppreference.com/w/cpp/language/cast_operator
 Bitboard::operator U64() const { return bitboard; }
 Bitboard::operator U64&() { return bitboard; }
 
 // Bitboard operators
-
 // set bit value to 1
 void Bitboard::set_bit(const int square)
 {
@@ -78,6 +78,7 @@ void Bitboard::clear_bitboard(void)
 }
 
 // print ASCII representation of a bitboard to standard output.
+// this is useful for debugging
 void Bitboard::print_bitboard() const
 {
 	for (int rank = 0; rank < 8; ++rank)
