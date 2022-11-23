@@ -1,8 +1,10 @@
 #include "bitboard.hpp"
-#include<iostream>
+#include <iostream>
 
 int main(void)
 {
-  std::cout << square(3.0) << std::endl;
+  Bitboard b(0);
+  b.print_bitboard();
+
   return 0;
 }
