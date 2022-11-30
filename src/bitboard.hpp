@@ -36,7 +36,7 @@ constexpr U64 NOT_H_FILE_MASK  =  9187201950435737471ULL;
 constexpr U64 NOT_AB_FILE_MASK = 18229723555195321596ULL;
 constexpr U64 NOT_GH_FILE_MASK =  4557430888798830399ULL;
 
-const std::array<std::string, 64> square_to_string_table =
+constexpr std::array square_to_string_table =
 {
 	"a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8",
 	"a7", "b7", "c7", "d7", "e7", "f7", "g7", "h7",
