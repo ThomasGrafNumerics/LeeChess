@@ -1,5 +1,6 @@
 #include "pieces_attack_tables.hpp"
 #include "board.hpp"
+#include "magic.hpp"
 #include <iostream>
 
 Bitboard PAWN_ATTACK_TABLE[2][64] = {};
@@ -97,17 +98,17 @@ Bitboard mask_bishop_attack(const int square)
 	return attack;
 }
 
-Bitboard mask_occupancy(const Bitboard& attack_mask, const int index_filter_mask)
+Bitboard mask_occupancy(const Bitboard& attack_mask, const int index)
 {
 	Bitboard occupancy(0);
 	Bitboard temp = attack_mask;
 	int relevant_bits = temp.count_set_bits();
-	for (int index = 0; index < relevant_bits; ++index)
+	for (int b = 0; b < relevant_bits; ++b)
 	{
 		int square = temp.get_ls1b_index();
 		temp.pop_bit();
 
-		if ((1 << index) & index_filter_mask)
+		if ((1 << b) & index)
 			occupancy.set_bit(square);
 
 	}
@@ -203,29 +204,35 @@ void init_leaper_attack_tables(void)
 	}
 }
 
-// void init_slider_attack_tables(void)
-// {
-// 	for (int square = 0; square < 64; ++square)
-// 	{
-// 		//init bishop && rook attack mask
-// 		BISHOP_ATTACK_MASK_TABLE[square] = MaskBishopAttack(square);
-// 		ROOK_ATTACK_MASK_TABLE[square] = MaskRookAttack(square);
+void init_slider_attack_tables(void)
+{
+	for (int square = 0; square < 64; ++square)
+	{
+		//init bishop && rook attack mask
+		BISHOP_ATTACK_MASK_TABLE[square] = mask_bishop_attack(square);
+		ROOK_ATTACK_MASK_TABLE[square] = mask_rook_attack(square);
 
-// 		//really it is just hashing the occupancy into the magic index
-// 		int occupancies_variation = 1 << BISHOP_RELEVANT_BITS_TABLE[square];
-// 		for (int index = 0; index < occupancies_variation; ++index)
-// 		{
-// 			Bitboard attack_mask_and_occupancy = MaskOccupancy(BISHOP_ATTACK_MASK_TABLE[square], index);
-// 			int magic_index = static_cast<int>((attack_mask_and_occupancy * BISHOP_MAGIC_NUM_TABLE[square]) >> (64 - BISHOP_RELEVANT_BITS_TABLE[square]));
-// 			BISHOP_ATTACK_TABLE[square][magic_index] = MaskBishopAttackOnFly(square, attack_mask_and_occupancy);
-// 		}
+		//really it is just hashing the occupancy into the magic index
+		int occupancies_variation = 1 << BISHOP_RELEVANT_BITS_TABLE[square];
+		for (int index = 0; index < occupancies_variation; ++index)
+		{
+			Bitboard attack_mask_and_occupancy = mask_occupancy(BISHOP_ATTACK_MASK_TABLE[square], index);
+			int magic_index = static_cast<int>((attack_mask_and_occupancy * BISHOP_MAGIC_NUM_TABLE[square]) >> (64 - BISHOP_RELEVANT_BITS_TABLE[square]));
+			std::cout << magic_index << std::endl;
+			BISHOP_ATTACK_TABLE[square][magic_index] = mask_bishop_attack_on_the_fly(square, attack_mask_and_occupancy);
+		}
 
-// 		occupancies_variation = 1 << ROOK_RELEVANT_BITS_TABLE[square];
-// 		for (int index = 0; index < occupancies_variation; ++index)
-// 		{
-// 			Bitboard attack_mask_and_occupancy = MaskOccupancy(ROOK_ATTACK_MASK_TABLE[square], index);
-// 			int magic_index = static_cast<int>((attack_mask_and_occupancy * ROOK_MAGIC_NUM_TABLE[square]) >> (64 - ROOK_RELEVANT_BITS_TABLE[square]));
-// 			ROOK_ATTACK_TABLE[square][magic_index] = MaskRookAttackOnFly(square, attack_mask_and_occupancy);
-// 		}
-// 	}
-// }
+		// occupancies_variation = 1 << ROOK_RELEVANT_BITS_TABLE[square];
+		// for (int index = 0; index < occupancies_variation; ++index)
+		// {
+		// 	Bitboard attack_mask_and_occupancy = mask_occupancy(ROOK_ATTACK_MASK_TABLE[square], index);
+		// 	int magic_index = static_cast<int>((attack_mask_and_occupancy * ROOK_MAGIC_NUM_TABLE[square]) >> (64 - ROOK_RELEVANT_BITS_TABLE[square]));
+		// 	ROOK_ATTACK_TABLE[square][magic_index] = mask_rook_attack_on_the_fly(square, attack_mask_and_occupancy);
+		// }
+	}
+	for (int k = 0; k < 512; ++k)
+	{
+		BISHOP_ATTACK_TABLE[D4][k].print_bitboard();
+	}
+}
+

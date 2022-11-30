@@ -9,6 +9,7 @@ using namespace std;
 int main(void)
 {
 	init_leaper_attack_tables();
+	init_slider_attack_tables();
 	//print_attacks();
 	return 0;
 }

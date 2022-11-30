@@ -45,6 +45,3 @@ Bitboard mask_rook_attack_on_the_fly(const Bitboard&, const int);
 
 void init_leaper_attack_tables(void);
 void init_slider_attack_tables(void);
-
-
-void print_attacks(void);
