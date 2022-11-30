@@ -63,7 +63,7 @@ int Bitboard::count_set_bits(void) const
 }
 
 // intended for nonzero bitboards only:
-// get the index of the least significant set bit
+// get the index of the least significant SET bit
 int Bitboard::get_ls1b_index(void) const
 {
   assert(bitboard != 0);
