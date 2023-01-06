@@ -28,7 +28,7 @@ Bitboard * init_bishop_magic_numbers(XORshift32&);
 void print_magic_numbers(void);
 
 // rook magic numbers
-constexpr U64 rook_magic_numbers[64] = {
+constexpr U64 ROOK_MAGIC_NUMBERS[64] = {
     0x8a80104000800020ull,
     0x140002000100040ull,
     0x2801880a0017001ull,
@@ -96,7 +96,7 @@ constexpr U64 rook_magic_numbers[64] = {
 };
 
 // bishop magic numbers
-constexpr U64 bishop_magic_numbers[64] = {
+constexpr U64 BISHOP_MAGIC_NUMBERS[64] = {
     0x40040844404084ull,
     0x2004208a004208ull,
     0x10190041080202ull,

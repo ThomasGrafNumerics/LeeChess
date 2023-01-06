@@ -37,15 +37,15 @@ Bitboard ROOK_MAGIC_NUMBERS_TABLE[64] = {};
 
 U64 find_magic_number(const unsigned int square, const bool is_bishop, XORshift32& rng)
 {
-	int relevant_bits = (is_bishop ? BISHOP_RELEVANT_NUMBER_OF_BITS_TABLE[square] : ROOK_RELEVANT_NUMBER_OF_BITS_TABLE[square]);
-	int occupancies_variation = 1 << relevant_bits;
+	const unsigned int relevant_bits = (is_bishop ? BISHOP_RELEVANT_NUMBER_OF_BITS_TABLE[square] : ROOK_RELEVANT_NUMBER_OF_BITS_TABLE[square]);
+	const unsigned int occupancies_variation = 1 << relevant_bits;
 
 	Bitboard *occupancies = new Bitboard[occupancies_variation]();
 	Bitboard *attacks = new Bitboard[occupancies_variation]();
 	Bitboard *used_attacks = new Bitboard[occupancies_variation]();
 	Bitboard attack_mask = (is_bishop ? mask_bishop_attacks(square) : mask_rook_attacks(square));
 	
-	for (int index = 0; index < occupancies_variation; ++index)
+	for (unsigned int index = 0; index < occupancies_variation; ++index)
 	{
 		occupancies[index] = mask_occupancy(attack_mask, index);
 
@@ -67,9 +67,9 @@ U64 find_magic_number(const unsigned int square, const bool is_bishop, XORshift3
 
 		std::fill(used_attacks, used_attacks + occupancies_variation, 0);
 		bool failed = false;
-		for (int index = 0; index < occupancies_variation; ++index)
+		for (unsigned int index = 0; index < occupancies_variation; ++index)
 		{
-			int magic_index = int( (occupancies[index] * magic_num_candidate) >> (64 - relevant_bits) );
+			unsigned int magic_index = (unsigned int)( (occupancies[index] * magic_num_candidate) >> (64 - relevant_bits) );
 			if (used_attacks[magic_index] == 0)
             {
                 used_attacks[magic_index] = attacks[index];
@@ -92,7 +92,7 @@ U64 find_magic_number(const unsigned int square, const bool is_bishop, XORshift3
 
 Bitboard * init_rook_magic_numbers(XORshift32& rng)
 {
-	for (int square = 0; square < 64; ++square)
+	for (unsigned int square = 0; square < 64; ++square)
 	{
 		ROOK_MAGIC_NUMBERS_TABLE[square] = find_magic_number(square, false, rng);
 	}
@@ -101,7 +101,7 @@ Bitboard * init_rook_magic_numbers(XORshift32& rng)
 
 Bitboard * init_bishop_magic_numbers(XORshift32& rng)
 {
-	for (int square = 0; square < 64; ++square)
+	for (unsigned int square = 0; square < 64; ++square)
 	{
 		BISHOP_MAGIC_NUMBERS_TABLE[square] = find_magic_number(square, true, rng);
 	}
@@ -112,18 +112,18 @@ void print_magic_numbers(void)
 {
     XORshift32 rng;
 
-    Bitboard * magic_rook = init_rook_magic_numbers(rng);
-    Bitboard * magic_bishop = init_bishop_magic_numbers(rng);
+    const Bitboard * magic_rook = init_rook_magic_numbers(rng);
+    const Bitboard * magic_bishop = init_bishop_magic_numbers(rng);
 
 	std::cout << "rook magic numbers:" << std::endl;
-    for (int square = 0; square < 64; ++square)
+    for (unsigned int square = 0; square < 64; ++square)
     {
         std::cout << "0x" << std::hex << magic_rook[square].get_bitboard_value() << "ull," << std::endl;
     }
 
 	std::cout << std::endl << "bishop magic numbers:" << std::endl;
 
-    for (int square = 0; square < 64; ++square)
+    for (unsigned int square = 0; square < 64; ++square)
     {
         std::cout << "0x" <<std::hex << magic_bishop[square].get_bitboard_value() << "ull," << std::endl;
     }

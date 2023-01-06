@@ -6,8 +6,13 @@
 
 int main(void)
 {
+    init_leaper_attack_tables();
+    Bitboard b;
 
-    print_magic_numbers();
-
+    for (int square = 0; square < 64; ++square)
+    {
+        b = KING_ATTACKS_TABLE[square];
+        b.print_bitboard();
+    }
     return 0;
 } 
