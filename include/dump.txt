@@ -1,0 +1,285 @@
+#include <iostream>
+#include "../include/bitboard.h"
+#include "../include/attack_tables.h"
+#include "../include/magic.h"
+
+XORshift32::operator unsigned int&() { return random_state; }
+XORshift32::operator unsigned int() const { return random_state; }
+
+unsigned int XORshift32::get_random_value(void) const { return random_state;}
+
+void XORshift32::update_random_state(void)
+{
+    random_state ^= random_state << 13;
+    random_state ^= random_state >> 17;
+    random_state ^= random_state << 5;
+}
+
+unsigned int XORshift32::random_state = 1804289383;
+
+U64 generate_random_U64_number(XORshift32& rng)
+{
+    U64 n1, n2, n3, n4;
+    n1 = (U64)(++rng) & 0xFFFF;
+    n2 = (U64)(++rng) & 0xFFFF;
+    n3 = (U64)(++rng) & 0xFFFF;
+    n4 = (U64)(++rng) & 0xFFFF;
+    return n1 | (n2 << 16) | (n3 << 32) | (n4 << 48);
+}
+
+U64 generate_magic_number_candidate(XORshift32& rng)
+{
+    return generate_random_U64_number(rng) & generate_random_U64_number(rng) & generate_random_U64_number(rng);
+}
+
+Bitboard BISHOP_MAGIC_NUMBERS_TABLE[64] = {};
+Bitboard ROOK_MAGIC_NUMBERS_TABLE[64] = {};
+
+
+U64 find_magic_number(const unsigned int square, const bool is_bishop, XORshift32& rng)
+{
+	int relevant_bits = (is_bishop ? BISHOP_RELEVANT_NUMBER_OF_BITS_TABLE[square] : ROOK_RELEVANT_NUMBER_OF_BITS_TABLE[square]);
+	int occupancies_variation = 1 << relevant_bits;
+	// 2^12, where 12 is the most possible attacking squares for bishop and rook on fly
+	Bitboard *occupancies = new Bitboard[occupancies_variation]();
+	Bitboard *attacks = new Bitboard[occupancies_variation]();
+	Bitboard *used_attacks = new Bitboard[occupancies_variation]();
+	Bitboard attack_mask = (is_bishop ? mask_bishop_attacks(square) : mask_rook_attacks(square));
+	
+	for (int index = 0; index < occupancies_variation; ++index)
+	{
+		//initialize all the possible occupancies variations
+		occupancies[index] = mask_occupancy(attack_mask, index);
+		//mask all the attacks on fly based on all occupancies variations
+		if (is_bishop)
+        {
+            attacks[index] = mask_bishop_attacks_on_the_fly(occupancies[index], square);
+        }
+		else
+        {
+            attacks[index] = mask_rook_attacks_on_the_fly(occupancies[index], square);
+        }
+	}
+
+	while (true)
+	{
+		U64 magic_num_candidate = generate_magic_number_candidate(rng);
+
+		if ( Bitboard( (attack_mask * magic_num_candidate) & 0xFF00000000000000 ).get_number_of_set_bits() < 6 ) continue;
+
+		std::fill(used_attacks, used_attacks + occupancies_variation, 0);
+		bool failed = false;
+		for (int index = 0; index < occupancies_variation; ++index)
+		{
+			int magic_index = int( (occupancies[index] * magic_num_candidate) >> (64 - relevant_bits) );
+
+			if (used_attacks[magic_index] == 0)
+            {
+                used_attacks[magic_index] = attacks[index];
+            }
+			else if (used_attacks[magic_index] != attacks[index])
+			{
+			    failed = true;
+				break;
+			}
+		}
+		if (!failed)
+		{
+			delete[] occupancies;
+			delete[] attacks;
+			delete[] used_attacks;
+			return magic_num_candidate;
+		}
+	}
+}
+
+Bitboard * init_bishop_magic_numbers(XORshift32& rng)
+{
+	for (int square = 0; square < 64; ++square)
+	{
+		BISHOP_MAGIC_NUMBERS_TABLE[square] = find_magic_number(square, true, rng);
+	}
+    return BISHOP_MAGIC_NUMBERS_TABLE;
+}
+
+Bitboard * init_rook_magic_numbers(XORshift32& rng)
+{
+	for (int square = 0; square < 64; ++square)
+	{
+		ROOK_MAGIC_NUMBERS_TABLE[square] = find_magic_number(square, false, rng);
+	}
+    return ROOK_MAGIC_NUMBERS_TABLE;
+}
+
+
+
+
+
+#pragma once
+#include "../include/bitboard.h"
+
+class XORshift32
+{
+    private:
+        static unsigned int random_state;
+    public:
+        // user-defined conversion functions
+        operator unsigned int&();
+        operator unsigned int() const;
+
+        XORshift32& operator++()
+        { 
+            update_random_state();
+            return *this; 
+        }
+
+        unsigned int get_random_value(void) const;
+        void update_random_state(void);
+};
+
+U64 generate_random_U64_number(XORshift32&);
+U64 generate_magic_number_candidate(XORshift32&);;
+U64 find_magic_number(const unsigned int, const bool, XORshift32&);
+Bitboard * init_bishop_magic_numbers(XORshift32&);
+Bitboard * init_rook_magic_numbers(XORshift32&);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#include <iostream>
+#include "../include/bitboard.h"
+#include "../include/attack_tables.h"
+#include "../include/magic.h"
+
+XORshift32::operator unsigned int&() { return random_state; }
+XORshift32::operator unsigned int() const { return random_state; }
+
+unsigned int XORshift32::get_random_value(void) const { return random_state;}
+
+void XORshift32::update_random_state(void)
+{
+    random_state ^= random_state << 13;
+    random_state ^= random_state >> 17;
+    random_state ^= random_state << 5;
+}
+
+unsigned int XORshift32::random_state = 1804289383;
+
+U64 generate_random_U64_number(XORshift32& rng)
+{
+    U64 n1, n2, n3, n4;
+    n1 = (U64)(++rng) & 0xFFFF;
+    n2 = (U64)(++rng) & 0xFFFF;
+    n3 = (U64)(++rng) & 0xFFFF;
+    n4 = (U64)(++rng) & 0xFFFF;
+    return n1 | (n2 << 16) | (n3 << 32) | (n4 << 48);
+}
+
+U64 generate_magic_number_candidate(XORshift32& rng)
+{
+    return generate_random_U64_number(rng) & generate_random_U64_number(rng) & generate_random_U64_number(rng);
+}
+
+Bitboard BISHOP_MAGIC_NUMBERS_TABLE[64] = {};
+Bitboard ROOK_MAGIC_NUMBERS_TABLE[64] = {};
+
+U64 find_magic_number(const unsigned int square, int relevant_bits, const bool is_bishop, XORshift32& rng)
+{
+    // init occupancies
+    Bitboard occupancies[4096];
+    
+    // init attack tables
+    Bitboard attacks[4096];
+    
+    // init used attacks
+    Bitboard used_attacks[4096];
+    
+    // init attack mask for a current piece
+    Bitboard attack_mask = is_bishop ? mask_bishop_attacks(square) : mask_rook_attacks(square);
+    
+    // init occupancy indicies
+    int occupancy_indicies = 1 << relevant_bits;
+    
+    // loop over occupancy indicies
+    for (int index = 0; index < occupancy_indicies; index++)
+    {
+        // init occupancies
+        occupancies[index] = mask_occupancy(attack_mask, index);
+        
+        // init attacks
+        attacks[index] = is_bishop ? mask_bishop_attacks_on_the_fly(occupancies[index], square) : mask_rook_attacks_on_the_fly(occupancies[index], square);
+    }
+    
+    // test magic numbers loop
+    for (int random_count = 0; random_count < 100000000; random_count++)
+    {
+        // generate magic number candidate
+        U64 magic_number = generate_magic_number_candidate(rng);
+        
+        // skip inappropriate magic numbers
+        if ( Bitboard( (attack_mask * magic_number) & 0xFF00000000000000 ).get_number_of_set_bits() < 6 ) continue;
+        
+        // init used attacks
+		std::fill(used_attacks, used_attacks + 4096, 0);
+
+        // init index & fail flag
+        int index, fail;
+        
+        // test magic index loop
+        for (index = 0, fail = 0; !fail && index < occupancy_indicies; index++)
+        {
+            // init magic index
+            int magic_index = (int)((occupancies[index] * magic_number) >> (64 - relevant_bits));
+            
+            // if magic index works
+            if (used_attacks[magic_index] == 0ULL)
+                // init used attacks
+                used_attacks[magic_index] = attacks[index];
+            
+            // otherwise
+            else if (used_attacks[magic_index] != attacks[index])
+                // magic index doesn't work
+                fail = 1;
+        }
+        
+        // if magic number works
+        if (!fail)
+            // return it
+            return magic_number;
+    }
+    
+    // if magic number doesn't work
+    std::cout << "Magic number fails!" << std::endl;
+    return 0ULL;
+}
+
+Bitboard * init_bishop_magic_numbers(XORshift32& rng)
+{
+	for (int square = 0; square < 64; ++square)
+	{
+		BISHOP_MAGIC_NUMBERS_TABLE[square] = find_magic_number(square, BISHOP_RELEVANT_NUMBER_OF_BITS_TABLE[square], true, rng);
+	}
+    return BISHOP_MAGIC_NUMBERS_TABLE;
+}
+
+Bitboard * init_rook_magic_numbers(XORshift32& rng)
+{
+	for (int square = 0; square < 64; ++square)
+	{
+		ROOK_MAGIC_NUMBERS_TABLE[square] = find_magic_number(square, ROOK_RELEVANT_NUMBER_OF_BITS_TABLE[square], false, rng);
+	}
+    return ROOK_MAGIC_NUMBERS_TABLE;
+}
