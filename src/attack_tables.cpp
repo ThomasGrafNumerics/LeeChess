@@ -207,20 +207,49 @@ void init_slider_attack_tables(void)
 		BISHOP_ATTACKS_MASK_TABLE[square] = mask_bishop_attacks(square);
 		ROOK_ATTACKS_MASK_TABLE[square] = mask_rook_attacks(square);
 
-		unsigned int occupancies_variation = 1 << BISHOP_RELEVANT_NUMBER_OF_BITS_TABLE[square];
+		unsigned int occupancies_variation = 1 << BISHOP_NUMBER_OF_RELEVANT_BITS_TABLE[square];
 		for (unsigned int index = 0; index < occupancies_variation; ++index)
 		{
 			Bitboard attack_mask_and_occupancy = mask_occupancy(BISHOP_ATTACKS_MASK_TABLE[square], index);
-			int magic_index = static_cast<int>((attack_mask_and_occupancy * BISHOP_MAGIC_NUMBERS[square]) >> (64 - BISHOP_RELEVANT_NUMBER_OF_BITS_TABLE[square]));
+			unsigned int magic_index = static_cast<unsigned int>((attack_mask_and_occupancy * BISHOP_MAGIC_NUMBERS[square]) >> (64 - BISHOP_NUMBER_OF_RELEVANT_BITS_TABLE[square]));
 			BISHOP_ATTACKS_TABLE[square][magic_index] = mask_bishop_attacks_on_the_fly(attack_mask_and_occupancy, square);
 		}
 
-		occupancies_variation = 1 << ROOK_RELEVANT_NUMBER_OF_BITS_TABLE[square];
+		occupancies_variation = 1 << ROOK_NUMBER_OF_RELEVANT_BITS_TABLE[square];
 		for (unsigned int index = 0; index < occupancies_variation; ++index)
 		{
 			Bitboard attack_mask_and_occupancy = mask_occupancy(ROOK_ATTACKS_MASK_TABLE[square], index);
-			int magic_index = static_cast<int>((attack_mask_and_occupancy * ROOK_MAGIC_NUMBERS[square]) >> (64 - ROOK_RELEVANT_NUMBER_OF_BITS_TABLE[square]));
+			unsigned int magic_index = static_cast<unsigned int>((attack_mask_and_occupancy * ROOK_MAGIC_NUMBERS[square]) >> (64 - ROOK_NUMBER_OF_RELEVANT_BITS_TABLE[square]));
 			ROOK_ATTACKS_TABLE[square][magic_index] = mask_rook_attacks_on_the_fly(attack_mask_and_occupancy, square);
 		}
 	}
+}
+
+Bitboard get_pawn_attack_exact(const bool attack_side, unsigned int square)
+{
+	return PAWN_ATTACKS_TABLE[attack_side][square];
+}
+Bitboard get_knight_attack_exact(unsigned int square)
+{
+	return KNIGHT_ATTACKS_TABLE[square];
+}
+Bitboard get_king_attack_exact(unsigned int square)
+{
+	return KING_ATTACKS_TABLE[square];
+}
+
+Bitboard get_bishop_attack_exact(unsigned int square, Bitboard occupancy)
+{
+	//hash occupancy into magic index;
+	unsigned int magic_index = static_cast<unsigned int>(((occupancy & BISHOP_ATTACKS_MASK_TABLE[square]) * BISHOP_MAGIC_NUMBERS[square]) >> (64 - BISHOP_NUMBER_OF_RELEVANT_BITS_TABLE[square]));
+
+	return BISHOP_ATTACKS_TABLE[square][magic_index];
+}
+
+Bitboard get_rook_attack_exact(unsigned int square, Bitboard occupancy)
+{
+	//hash occupancy into magic index;
+	unsigned int magic_index = static_cast<unsigned int>(((occupancy & ROOK_ATTACKS_MASK_TABLE[square]) * ROOK_MAGIC_NUMBERS[square]) >> (64 - ROOK_NUMBER_OF_RELEVANT_BITS_TABLE[square]));
+
+	return ROOK_ATTACKS_TABLE[square][magic_index];
 }

@@ -72,7 +72,7 @@ enum Ranks {RANK_8, RANK_7, RANK_6, RANK_5, RANK_4, RANK_3, RANK_2, RANK_1};
 
 enum Files {FILE_A, FILE_B, FILE_C, FILE_D, FILE_E, FILE_F, FILE_G, FILE_H};
 
-constexpr int BISHOP_RELEVANT_NUMBER_OF_BITS_TABLE[64] =
+constexpr int BISHOP_NUMBER_OF_RELEVANT_BITS_TABLE[64] =
 {
     6, 5, 5, 5, 5, 5, 5, 6,
     5, 5, 5, 5, 5, 5, 5, 5,
@@ -84,7 +84,7 @@ constexpr int BISHOP_RELEVANT_NUMBER_OF_BITS_TABLE[64] =
     6, 5, 5, 5, 5, 5, 5, 6
 };
 
-constexpr int ROOK_RELEVANT_NUMBER_OF_BITS_TABLE[64] =
+constexpr int ROOK_NUMBER_OF_RELEVANT_BITS_TABLE[64] =
 {
     12, 11, 11, 11, 11, 11, 11, 12,
     11, 10, 10, 10, 10, 10, 10, 11,

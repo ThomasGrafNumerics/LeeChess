@@ -37,7 +37,7 @@ Bitboard ROOK_MAGIC_NUMBERS_TABLE[64] = {};
 
 U64 find_magic_number(const unsigned int square, const bool is_bishop, XORshift32& rng)
 {
-	const unsigned int relevant_bits = (is_bishop ? BISHOP_RELEVANT_NUMBER_OF_BITS_TABLE[square] : ROOK_RELEVANT_NUMBER_OF_BITS_TABLE[square]);
+	const unsigned int relevant_bits = (is_bishop ? BISHOP_NUMBER_OF_RELEVANT_BITS_TABLE[square] : ROOK_NUMBER_OF_RELEVANT_BITS_TABLE[square]);
 	const unsigned int occupancies_variation = 1 << relevant_bits;
 
 	Bitboard *occupancies = new Bitboard[occupancies_variation]();
