@@ -238,7 +238,7 @@ Bitboard get_king_attack_exact(unsigned int square)
 	return KING_ATTACKS_TABLE[square];
 }
 
-Bitboard get_bishop_attack_exact(unsigned int square, Bitboard occupancy)
+Bitboard get_bishop_attack_exact(unsigned int square, const Bitboard& occupancy)
 {
 	//hash occupancy into magic index;
 	unsigned int magic_index = static_cast<unsigned int>(((occupancy & BISHOP_ATTACKS_MASK_TABLE[square]) * BISHOP_MAGIC_NUMBERS[square]) >> (64 - BISHOP_NUMBER_OF_RELEVANT_BITS_TABLE[square]));
@@ -246,7 +246,7 @@ Bitboard get_bishop_attack_exact(unsigned int square, Bitboard occupancy)
 	return BISHOP_ATTACKS_TABLE[square][magic_index];
 }
 
-Bitboard get_rook_attack_exact(unsigned int square, Bitboard occupancy)
+Bitboard get_rook_attack_exact(unsigned int square, const Bitboard& occupancy)
 {
 	//hash occupancy into magic index;
 	unsigned int magic_index = static_cast<unsigned int>(((occupancy & ROOK_ATTACKS_MASK_TABLE[square]) * ROOK_MAGIC_NUMBERS[square]) >> (64 - ROOK_NUMBER_OF_RELEVANT_BITS_TABLE[square]));

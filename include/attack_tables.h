@@ -20,3 +20,8 @@ Bitboard mask_rook_attacks_on_the_fly(const Bitboard&, const unsigned int);
 Bitboard mask_occupancy(const Bitboard&, const unsigned int);
 void init_leaper_attack_tables(void);
 void init_slider_attack_tables(void);
+Bitboard get_pawn_attack_exact(const bool, unsigned int);
+Bitboard get_knight_attack_exact(unsigned int);
+Bitboard get_king_attack_exact(unsigned int);
+Bitboard get_bishop_attack_exact(unsigned int, const Bitboard&);
+Bitboard get_rook_attack_exact(unsigned int, const Bitboard&);
