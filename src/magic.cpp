@@ -20,10 +20,10 @@ unsigned int XORshift32::random_state = 1804289383;
 U64 generate_random_U64_number(XORshift32& rng)
 {
     U64 n1, n2, n3, n4;
-    n1 = (U64)(++rng) & 0xFFFF;
-    n2 = (U64)(++rng) & 0xFFFF;
-    n3 = (U64)(++rng) & 0xFFFF;
-    n4 = (U64)(++rng) & 0xFFFF;
+    n1 = static_cast<U64>(++rng) & 0xFFFF;
+    n2 = static_cast<U64>(++rng) & 0xFFFF;
+    n3 = static_cast<U64>(++rng) & 0xFFFF;
+    n4 = static_cast<U64>(++rng) & 0xFFFF;
     return n1 | (n2 << 16) | (n3 << 32) | (n4 << 48);
 }
 
