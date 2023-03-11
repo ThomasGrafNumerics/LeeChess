@@ -1,12 +1,12 @@
 #include "bitboard.h"
 #include <iostream>
 
-// default constructor
 Bitboard::Bitboard(void) : bitboard{0_int64} {}
-
-// constructor
 Bitboard::Bitboard(const uint64_t init_bitboard) : bitboard{init_bitboard} {}
+Bitboard::Bitboard(const Bitboard& rhs) : bitboard{rhs.bitboard} {}
 
+Bitboard::operator uint64_t&() { return bitboard; }
+Bitboard::operator uint64_t() const { return bitboard; }
 
 bool Bitboard::get_bit(const unsigned int square) const
 {

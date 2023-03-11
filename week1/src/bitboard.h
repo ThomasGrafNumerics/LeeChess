@@ -7,6 +7,16 @@ class Bitboard
 		// constructors
 		Bitboard(void); // default constructor
 		Bitboard(const uint64_t); // constructor
+		Bitboard(const Bitboard&); // copy constructor
+		Bitboard& operator=(const Bitboard& rhs) // copy assignment operator
+		{ 
+			bitboard = rhs.bitboard;
+			return *this;
+		}; 
+
+		// user-defined conversion functions
+		operator uint64_t&();
+		operator uint64_t() const;
 
 		bool get_bit(const unsigned int) const;
 		void print_bitboard(void) const;

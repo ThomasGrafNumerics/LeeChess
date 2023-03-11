@@ -4,15 +4,15 @@
 
 int main(void)
 {
-	Bitboard b;
+	// Bitboard b;
 
-	for (unsigned square = 0; square < 64; ++square)
-	{
-		b.set_bit(square);
-		b.print_bitboard();
-	}
+	// for (unsigned square = 0; square < 64; ++square)
+	// {
+	// 	b.set_bit(square);
+	// 	b.print_bitboard();
+	// }
 
-	std::cout << b.get_bitboard_value() << std::endl;
+	// std::cout << b.get_bitboard_value() << std::endl;
 
 	return 0;
 }
