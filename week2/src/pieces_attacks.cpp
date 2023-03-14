@@ -1,5 +1,4 @@
 #include "pieces_attacks.h"
-
 Bitboard Pieces_Attacks::pawn_attacks_used_to_precompute_attack_tables_later(const bool side, const unsigned int square) const
 {
 	Bitboard attack(0), temp(0);
