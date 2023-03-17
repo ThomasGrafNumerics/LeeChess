@@ -19,11 +19,11 @@ int main(void)
 	board = attacks.rook_attacks_used_to_precompute_attack_tables_later(blockers, H1);
 	board.print_bitboard();
 
-	// for (unsigned square = 0; square < 64; ++square)
-	// {
-	// 	board = attacks.knight_attacks_used_to_precompute_attack_tables_later(square);
-	// 	board.print_bitboard();
-	// }
+	for (unsigned square = 0; square < 64; ++square)
+	{
+		board = attacks.bishop_attacks_used_to_precompute_attack_tables_later(blockers, square);
+		board.print_bitboard();
+	}
 
 	return 0;
 }
