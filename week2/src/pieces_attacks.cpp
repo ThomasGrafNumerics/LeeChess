@@ -99,18 +99,11 @@ Bitboard Pieces_Attacks::rook_attacks_used_to_precompute_attack_tables_later(con
 Bitboard Pieces_Attacks::bishop_attacks_used_to_precompute_attack_tables_later(const Bitboard blockers, const unsigned int square) const
 {
 	Bitboard attack(0);
+
 	const int rank = square / 8;
 	const int file = square % 8;
 
-	// ray to North-West
-	for (int r = rank + 1, f = file - 1; r <= 7 && f >= 0; ++r, --f)
-	{
-		Bitboard bitboard = 1_int64 << (r * 8 + f);
-		attack |= bitboard;
-		if (bitboard & blockers) break;
-	}
-
-	// ray to North-East
+	// 
 	for (int r = rank + 1, f = file + 1; r <= 7 && f <= 7; ++r, ++f)
 	{
 		Bitboard bitboard = 1_int64 << (r * 8 + f);
@@ -118,16 +111,24 @@ Bitboard Pieces_Attacks::bishop_attacks_used_to_precompute_attack_tables_later(c
 		if (bitboard & blockers) break;
 	}
 
-	// ray to South-East
-	for (int r = rank - 1, f = file - 1; f <= 7 && r >= 0; --r, --f)
+	// 
+	for (int r = rank + 1, f = file - 1; r <= 7 && f >= 0; ++r, --f)
 	{
 		Bitboard bitboard = 1_int64 << (r * 8 + f);
 		attack |= bitboard;
 		if (bitboard & blockers) break;
 	}
-	
-	// ray to South-West
-	for (int r = rank - 1, f = file + 1; f >= 0 && r >= 0; --r, --f)
+
+	// 
+	for (int r = rank - 1, f = file + 1; r >= 0 && f <= 7; --r, ++f)
+	{
+		Bitboard bitboard = 1_int64 << (r * 8 + f);
+		attack |= bitboard;
+		if (bitboard & blockers) break;
+	}
+
+	// 
+	for (int r = rank - 1, f = file - 1; r >= 0 && f >= 0; --r, --f)
 	{
 		Bitboard bitboard = 1_int64 << (r * 8 + f);
 		attack |= bitboard;
