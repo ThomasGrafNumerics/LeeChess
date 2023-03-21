@@ -137,3 +137,17 @@ Bitboard Pieces_Attacks::bishop_attacks_used_to_precompute_attack_tables_later(c
 
 	return attack;
 }
+
+void Pieces_Attacks::precompute_leaper_pieces_attack_tables(void)
+{
+	for (unsigned square = 0; square < 64; ++square)
+	{
+		KING_ATTACKS_TABLE[square] = king_attacks_used_to_precompute_attack_tables_later(square);
+	}
+
+}
+
+Bitboard Pieces_Attacks::precomputed_king_attacks(unsigned int square) const
+{
+	return KING_ATTACKS_TABLE[square];
+}
