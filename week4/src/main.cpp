@@ -6,14 +6,18 @@
 int main(void)
 {
 	Pieces_Attacks attacks;
-	Bitboard king;
-	attacks.precompute_leaper_pieces_attack_tables();
+	Bitboard A, B, C;
+	A.set_bit(A8);
+	A.set_bit(B8);
+	A.set_bit(D7);
+	A.set_bit(F6);
 
-	for (unsigned square = 0; square < 64; ++square)
-	{
-		king = attacks.precomputed_king_attacks(square);
-		king.print_bitboard();
-	}
+	B.set_bit(H7);
+	B.set_bit(H6);
+
+
+	C = A * B;
+	C.print_bitboard();
 
 	return 0;
 }

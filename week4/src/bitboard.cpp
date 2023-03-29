@@ -26,7 +26,8 @@ void Bitboard::print_bitboard(void) const
 		}
 		std::cout << "\n";
 	}
-	std::cout << "   A B C D E F G H" << "\n\n";
+	std::cout << "   A B C D E F G H" << "\n";
+	std::cout << bitboard << "\n\n";
 }
 
 uint64_t Bitboard::get_bitboard_value(void) const
