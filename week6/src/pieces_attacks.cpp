@@ -1,5 +1,8 @@
 #include "pieces_attacks.h"
 
+Pieces_Attacks::Pieces_Attacks() : MNC{1804289383} {}
+Pieces_Attacks::Pieces_Attacks(const uint32_t xorshift32_seed) : MNC{xorshift32_seed} {}
+
 Bitboard Pieces_Attacks::pawn_attacks_used_to_precompute_attack_tables_later(const bool side, const unsigned int square) const
 {
 	Bitboard attack(0), temp(0);
@@ -189,7 +192,64 @@ Bitboard Pieces_Attacks::give_kth_possible_blocker_configuration_within_given_re
 }
 
 
+uint64_t Pieces_Attacks::find_magic_number(const bool is_rook, const unsigned int square)
+{
+	const unsigned int number_of_relevant_squares = (is_rook ?  ROOK_NUMBER_OF_RELEVANT_SQUARES_TABLE[square] : BISHOP_NUMBER_OF_RELEVANT_SQUARES_TABLE[square]);
+	const unsigned int max_number_of_possible_blocker_configurations = 1 << number_of_relevant_squares;
 
+	Bitboard *occupancies = new Bitboard[max_number_of_possible_blocker_configurations]();
+	Bitboard *attacks = new Bitboard[max_number_of_possible_blocker_configurations]();
+	Bitboard *used_attacks = new Bitboard[max_number_of_possible_blocker_configurations]();
+	Bitboard reduced_attack_mask = (is_rook ? rook_give_reduced_attack_mask_for_given_square(square) : bishop_give_reduced_attack_mask_for_given_square(square));
+	
+	for (unsigned int k = 0; k < max_number_of_possible_blocker_configurations; ++k)
+	{
+		occupancies[k] = give_kth_possible_blocker_configuration_within_given_reduced_attack_mask(reduced_attack_mask, k);
+
+		if (is_rook)
+		{
+
+			attacks[k] = rook_attacks_used_to_precompute_attack_tables_later(occupancies[k], square);
+		}
+		else
+		{
+			attacks[k] = bishop_attacks_used_to_precompute_attack_tables_later(occupancies[k], square);
+		}
+	}
+
+	while (true)
+	{
+		uint64_t magic_number_candidate =  MNC();
+
+		if ( Bitboard( (reduced_attack_mask * magic_number_candidate) & 0xff00000000000000 ).get_number_of_set_bits() < 6 )
+		{
+			continue;
+		}
+
+		std::fill(used_attacks, used_attacks + max_number_of_possible_blocker_configurations, 0);
+		bool failed = false;
+		for (unsigned int k = 0; k < max_number_of_possible_blocker_configurations; ++k)
+		{
+			unsigned int magic_index = static_cast<unsigned int> ( (occupancies[k] * magic_number_candidate) >> (64 - number_of_relevant_squares) );
+			if (used_attacks[magic_index] == 0)
+			{
+				used_attacks[magic_index] = attacks[k];
+			}
+			else if (used_attacks[magic_index] != attacks[k])
+			{
+				failed = true;
+				break;
+			}
+		}
+		if (!failed)
+		{
+			delete[] occupancies;
+			delete[] attacks;
+			delete[] used_attacks;
+			return magic_number_candidate;
+		}
+	}
+}
 
 
 
